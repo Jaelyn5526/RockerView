@@ -2,11 +2,16 @@ package jaelyn.blgproject;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
+
+    private PlaneControlView powerCtl;
+    private PlaneControlView orienCtl;
+    private boolean isSensorMode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,14 +21,14 @@ public class MainActivity extends AppCompatActivity {
         final TextView orienTv = (TextView) findViewById(R.id.orien_tv);
         final TextView powerTv = (TextView) findViewById(R.id.power_tv);
 
-        PlaneControlView powerCtl = (PlaneControlView) findViewById(R.id.power_rocker);
-        PlaneControlView orienCtl = (PlaneControlView) findViewById(R.id.orien_rocker);
+        powerCtl = (PlaneControlView) findViewById(R.id.power_rocker);
+        orienCtl = (PlaneControlView) findViewById(R.id.orien_rocker);
 
         powerCtl.setOnLocaListener(new PlaneControlView.OnLocaListener() {
             @Override
             public void getLocation(float x, float y) {
                 DecimalFormat fnum = new DecimalFormat("##0.00");
-                powerTv.setText("power1: x-" + fnum.format(x) + "  y-" + fnum.format(y));
+                powerTv.setText("power1: x,y(" + fnum.format(x) +","+ fnum.format(y)+")");
             }
         });
 
@@ -31,8 +36,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void getLocation(float x, float y) {
                 DecimalFormat fnum = new DecimalFormat("##0.00");
-                orienTv.setText("orien1: x-" + fnum.format(x) + "  y-" + fnum.format(y));
+                orienTv.setText("orien1: x,y(" + fnum.format(x) +","+ fnum.format(y)+")");
             }
         });
+
+        findViewById(R.id.sensor_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isSensorMode) {
+                    orienCtl.setControlMode(PlaneControlView.CONTROL_BY_ORIENTATION);
+                    isSensorMode = true;
+                } else {
+                    orienCtl.moveBack();
+                    orienCtl.setControlMode(PlaneControlView.CONTROL_BY_TOUCH);
+                    isSensorMode = false;
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        orienCtl.registerListener();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        orienCtl.unregisterListener();
     }
 }

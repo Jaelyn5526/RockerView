@@ -14,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /**
- * Created by zaric on 16-06-29.
+ * Created by jaelyn on 16-06-29.
  */
 public class PlaneControlView extends View {
     public static final int BACK_MODE_LINE_Y = 1;
@@ -54,7 +54,7 @@ public class PlaneControlView extends View {
 
     private int mControlMode = CONTROL_BY_TOUCH;
 
-    private float percenX, percenY;
+    private float mRockerXPer, mRockerYPer;
 
     private Runnable moveBackRunnable = new Runnable() {
         @Override
@@ -86,6 +86,13 @@ public class PlaneControlView extends View {
         mRockerGravide = a.getInteger(R.styleable.PlaneControlView_rocker_gravide, 0);
         mRockeBackMode = a.getInteger(R.styleable.PlaneControlView_rocker_back_mode, 0);
         a.recycle();
+        if (mRockerGravide == 0) {
+            mRockerXPer = 0;
+            mRockerYPer = 0;
+        } else if (mRockerGravide == 1) {
+            mRockerXPer = 0;
+            mRockerYPer = -1;
+        }
         paint.setColor(0xaaff0000);
     }
 
@@ -100,14 +107,6 @@ public class PlaneControlView extends View {
         mBgR = (int) (parentWidth/2 - mPagerMargins - mRockerR);
         mRockerWidth = mDrawRocker.getIntrinsicWidth();
         mRockerR = mRockerWidth / 2;
-        Log.d("onMeasure-", "onMeasure");
-        if (mRockerGravide == 0) {
-            mRockerX = mBgWight / 2;
-            mRockerY = mBgWight / 2;
-        } else if (mRockerGravide == 1) {
-            mRockerX = mBgWight / 2;
-            mRockerY = mBgWight - mPagerMargins - mRockerR;
-        }
         setMeasuredDimension(parentWidth, parentHeight);
     }
 
@@ -119,7 +118,6 @@ public class PlaneControlView extends View {
         mDrawBg.draw(canvas);
         mDrawRocker.setBounds(getRockerRect());
         mDrawRocker.draw(canvas);
-        //canvas.drawCircle(mBgWight / 2, mBgWight / 2, mBgR, paint);
     }
 
     /**
@@ -128,9 +126,10 @@ public class PlaneControlView extends View {
      * @return
      */
     private Rect getRockerRect() {
-        mRockerRect.set(mRockerX - mRockerR, mRockerY - mRockerR, mRockerX + mRockerR,
-                mRockerY + mRockerR);
-        Log.d("mRoce-", mRockerRect.toShortString()+"  mRockerX="+mRockerX +"  mRockerR="+mRockerR);
+        int rockerX = (int) (mBgR * mRockerXPer + mBgWight/2);
+        int rockerY = (int) (-mBgR * mRockerYPer + mBgWight/2);
+        mRockerRect.set(rockerX - mRockerR, rockerY - mRockerR, rockerX + mRockerR,
+                rockerY + mRockerR);
         return mRockerRect;
     }
 
@@ -194,7 +193,7 @@ public class PlaneControlView extends View {
         return mBgR >= Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     }
 
-    public void setCircleXY(float x, float y){
+    private void setCircleXY(float x, float y){
         float dx = mBgWight / 2 - x;
         float dy = mBgWight / 2 - y;
         double touchR = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
@@ -206,15 +205,14 @@ public class PlaneControlView extends View {
         mRockerY = (int) (mBgR * Math.sin(cosAngle)) + mBgWight /2;
     }
 
-    public void setLinstenerData(){
+    private void setLinstenerData(){
         if (mBgR == 0){
             return;
         }
-        percenX = (mRockerX - mBgWight / 2f) / (float)mBgR;
-        percenY = (mBgWight / 2f - mRockerY) / (float)mBgR;
-        Log.d("mRocker--XY", percenX + "---   "+percenY+"---"+ mRockerX + " --- "+ mRockerY +"---"+mBgWight / 2f +"----"+mBgR );
+        mRockerXPer = (mRockerX - mBgWight / 2f) / (float)mBgR;
+        mRockerYPer = (mBgWight / 2f - mRockerY) / (float)mBgR;
         if (onLocaListener != null){
-            onLocaListener.getLocation(percenX, percenY);
+            onLocaListener.getLocation(mRockerXPer, mRockerYPer);
         }
     }
 
@@ -254,12 +252,11 @@ public class PlaneControlView extends View {
             }else {
                 post(this);
             }
-            Log.d("progress--", progress+"");
             moveRocker(dx * progress + startX, dy * progress + startY);
         }
     }
 
-    public void setBackMode(int baceMode, boolean moveToBack){
+    private void setBackMode(int baceMode, boolean moveToBack){
         this.mRockeBackMode = baceMode;
         if (moveToBack){
             moveBack();
@@ -333,12 +330,12 @@ public class PlaneControlView extends View {
         }
     }
 
-    public float getPercenX() {
-        return percenX;
+    public float getmRockerXPer() {
+        return mRockerXPer;
     }
 
-    public float getPercenY() {
-        return percenY;
+    public float getmRockerYPer() {
+        return mRockerYPer;
     }
 
     public byte getTrimX() {
