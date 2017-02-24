@@ -58,12 +58,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        //注册传感器
         orienCtl.registerListener();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        //取消注册传感器
         orienCtl.unregisterListener();
     }
 }
