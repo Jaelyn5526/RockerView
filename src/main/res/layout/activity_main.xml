@@ -38,8 +38,6 @@
         app:rocker_gravide="0"
         />
 
-
-
     <jaelyn.blgproject.PlaneControlView
         android:id="@+id/power_rocker"
         android:layout_width="220dp"

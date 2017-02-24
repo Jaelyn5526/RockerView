@@ -3,7 +3,9 @@
     <declare-styleable name="PlaneControlView">
         <attr name="control_bg" format="reference"/>
         <attr name="control_rocker" format="reference"/>
+        <!--球初始化的位置 0-居中 1-底部 -->
         <attr name="rocker_gravide" format="integer"/>
+        <!--球回归点 0-回归中点  1-会回归y轴-->
         <attr name="rocker_back_mode" format="integer"/>
     </declare-styleable>
 </resources>
