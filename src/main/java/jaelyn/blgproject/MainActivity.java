@@ -16,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_test);
+        setContentView(R.layout.activity_main);
 
         final TextView orienTv = (TextView) findViewById(R.id.orien_tv);
         final TextView powerTv = (TextView) findViewById(R.id.power_tv);
